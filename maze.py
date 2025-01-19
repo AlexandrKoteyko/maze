@@ -14,6 +14,32 @@ class GameSprite(sprite.Sprite):
 
 win_width = 700
 win_height = 500
+class Player(GameSprite):
+    def  update(self):
+        keys=key.get_pressed()
+        if keys[K_LEFT] and self.rect.x>5:
+            self.rect.x -=self.speed
+        if keys[K_RIGHT] and self.rect.x<win_width-80:
+            self.rect.x +=self.speed
+        if keys[K_UP] and self.rect.y>5:
+            self.rect.y -=self.speed
+        if keys[K_DOWN] and self.rect.y<win_height-80:
+            self.rect.y +=self.speed
+        
+class Enemy(GameSprite):
+    direction = "left"
+    def update(self):
+        if self.rect.x <= 470:
+            self.direction = "right"
+        if self.rect.x>=win_width-80:
+            self.direction = "left"
+
+        if self.direction=="left":
+            self.rect.x-=self.speed
+        else:
+            self.rect.x+=self.speed
+
+
 
 window=display.set_mode((win_width, win_height))
 display.set_caption("Maze")
@@ -26,14 +52,28 @@ final= GameSprite("treasure.png", win_width - 100, win_height - 80, 0)
 game = True
 clock=time.Clock()
 FPS = 60
+finish=False
+
+mixer.init()
+mixer.musics.load("jungles.ogg")
+mixer.music.play()
+
+
 
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
-    window.blit(background,(0,0))
-    player.reset()
-    monster.reset()
+    if finish!=True:
+
+        window.blit(background,(0,0))
+        player.update()
+        monster.update()
+
+
+        player.reset()
+        monster.reset()
+        final.reset()
 
     display.update()
     clock.tick(FPS)
